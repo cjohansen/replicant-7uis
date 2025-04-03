@@ -1,0 +1,7 @@
+{:deps {:aliases [:dev]}
+ :dev-http {8090 ["resources/public"]}
+ :builds
+ {:app
+  {:target :browser
+   :modules {:main {:init-fn guis.dev/main}}
+   :dev {:output-dir "resources/public/js"}}}}

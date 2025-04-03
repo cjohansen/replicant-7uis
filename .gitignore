@@ -1,0 +1,5 @@
+resources/public/js
+/.cpcache/
+/.shadow-cljs/
+/node_modules/
+/resources/public/styles.css
