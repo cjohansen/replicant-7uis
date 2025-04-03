@@ -1,7 +1,7 @@
 (ns guis.dev
   (:require [guis.core :as guis]))
 
-(def store (atom {:number 0}))
+(defonce store (atom {:number 0}))
 
 (defn main []
   (guis/init store)
