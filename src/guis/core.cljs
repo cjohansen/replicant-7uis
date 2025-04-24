@@ -1,6 +1,7 @@
 (ns guis.core
   (:require [clojure.walk :as walk]
             [guis.counter :as counter]
+            [guis.flights :as flights]
             [guis.layout :as layout]
             [guis.temperature :as temperature]
             [replicant.dom :as r]))
@@ -9,7 +10,9 @@
   [{:id :counter
     :text "Counter"}
    {:id :temperatures
-    :text "Temperatures"}])
+    :text "Temperatures"}
+   {:id :flights
+    :text "Flights"}])
 
 (defn get-current-view [state]
   (:current-view state))
@@ -21,6 +24,9 @@
      (case current-view
        :counter
        (counter/render-ui state)
+
+       :flights
+       (flights/render-ui state)
 
        :temperatures
        (temperature/render-ui state)
@@ -52,6 +58,12 @@
        :event.target/value-as-number
        (some-> event .-target .-valueAsNumber)
 
+       :event.target/value-as-keyword
+       (some-> event .-target .-value keyword)
+
+       :event.target/value
+       (some-> event .-target .-value)
+
        x))
    data))
 
@@ -59,7 +71,7 @@
   (add-watch store ::render (fn [_ _ _ new-state]
                               (r/render
                                js/document.body
-                               (render-ui new-state))))
+                               (render-ui (assoc new-state :now (js/Date.))))))
 
   (r/set-dispatch!
    (fn [{:replicant/keys [dom-event]} event-data]

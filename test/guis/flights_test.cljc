@@ -1,6 +1,7 @@
 (ns guis.flights-test
   (:require [clojure.test :refer [deftest testing is]]
-            [guis.flights :as flights]))
+            [guis.flights :as flights]
+            [lookup.core :as lookup]))
 
 (deftest get-form-state-test
   (testing "Defaults to one-way flight"
@@ -116,3 +117,40 @@
                  flights/get-form-state
                  ::flights/button
                  :disabled?)))))
+
+(deftest render-form-test
+  (testing "Takes user input on flight type select"
+    (is (= (->> (flights/render-form {})
+                (lookup/select-one :select)
+                lookup/attrs
+                :on :input)
+           [[:action/assoc-in [::flights/type] :event.target/value-as-keyword]])))
+
+  (testing "Takes user input on departure date"
+    (is (= (->> (flights/render-form {})
+                (lookup/select-one "input[name=departure-date]")
+                lookup/attrs
+                :on :input)
+           [[:action/assoc-in [::flights/departure-date] :event.target/value]])))
+
+  (testing "Marks invalid departure date"
+    (is (->> (flights/render-form {::flights/departure-date {:invalid? true}})
+             (lookup/select-one "input[name=departure-date].input-error"))))
+
+  (testing "Takes user input on return date"
+    (is (= (->> (flights/render-form {})
+                (lookup/select-one "input[name=return-date]")
+                lookup/attrs
+                :on :input)
+           [[:action/assoc-in [::flights/return-date] :event.target/value]])))
+
+  (testing "Marks invalid return date"
+    (is (->> (flights/render-form {::flights/return-date {:invalid? true}})
+             (lookup/select-one "input[name=return-date].input-error"))))
+
+  (testing "Clicking button books flight"
+    (is (= (->> (flights/render-form {})
+                (lookup/select-one "button")
+                lookup/attrs
+                :on :click)
+           [[:action/assoc-in [::flights/booked?] true]]))))
