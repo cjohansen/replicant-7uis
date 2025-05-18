@@ -105,7 +105,8 @@
       (str ", returning on " (:value (::return-date form-state))))
     "."]
    [:button.btn
-    {:on {:click [[:action/assoc-in [::booked?] false]]}}
+    {:on {:click [[:action/assoc-in [::booked?] false]
+                  [:action/assoc-in [::type] :one-way]]}}
     "Try again"]])
 
 (defn render-ui [state]
