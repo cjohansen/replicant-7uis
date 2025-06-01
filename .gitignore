@@ -4,3 +4,5 @@ resources/public/js
 /node_modules/
 /resources/public/styles.css
 /.nrepl-port
+/.clj-kondo/
+/.lsp/
