@@ -4,6 +4,7 @@
             [guis.flights :as flights]
             [guis.layout :as layout]
             [guis.temperature :as temperature]
+            [guis.timer :as timer]
             [replicant.dom :as r]))
 
 (def views
@@ -12,7 +13,9 @@
    {:id :temperatures
     :text "Temperatures"}
    {:id :flights
-    :text "Flights"}])
+    :text "Flights"}
+   {:id :timer
+    :text "Timer"}])
 
 (defn get-current-view [state]
   (:current-view state))
@@ -30,6 +33,9 @@
 
        :temperatures
        (temperature/render-ui state)
+
+       :timer
+       (timer/render-ui state)
 
        [:h1.text-lg "Select your UI of choice"])]))
 
@@ -63,6 +69,9 @@
 
        :event.target/value
        (some-> event .-target .-value)
+
+       :clock/now
+       (js/Date.)
 
        x))
    data))
