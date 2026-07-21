@@ -1,10 +1,10 @@
 (ns guis.core
-  (:require [clojure.walk :as walk]
-            [guis.counter :as counter]
+  (:require [guis.counter :as counter]
             [guis.flights :as flights]
             [guis.layout :as layout]
             [guis.temperature :as temperature]
             [guis.timer :as timer]
+            [nexus.core :as nexus]
             [replicant.dom :as r]))
 
 (def views
@@ -42,59 +42,45 @@
 
        [:h1.text-lg "Select your UI of choice"])]))
 
-(defn process-effect [store [effect & args] {:keys [handle-actions]}]
-  (case effect
-    :effect/assoc-in
-    (apply swap! store assoc-in args)
+(def nexus
+  {:nexus/system->state
+   (fn [store]
+     (assoc @store :now (js/Date.)))
+
+   :nexus/effects
+   {:effect/assoc-in
+    (fn [_ store path v]
+      (swap! store assoc-in path v))
 
     :effect/schedule
-    (let [[ms actions] args]
-      (js/setTimeout #(handle-actions actions) ms))))
+    (fn [{:keys [dispatch]} _ ms actions]
+      (js/setTimeout #(dispatch actions) ms))}
 
-(defn perform-actions [state event-data]
-  (mapcat
-   (fn [action]
-     (prn (first action) (rest action))
-     (or (counter/perform-action state action)
-         (temperature/perform-action state action)
-         (timer/perform-action state action)
-         (case (first action)
-           :action/assoc-in
-           [(into [:effect/assoc-in] (rest action))]
+   :nexus/actions
+   (merge counter/actions
+          temperature/actions
+          timer/actions)
 
-           (prn "Unknown action"))))
-   event-data))
+   :nexus/placeholders
+   {:event.target/value
+    (fn [{:keys [event]}]
+      (some-> event .-target .-value))
 
-(defn interpolate [event data]
-  (walk/postwalk
-   (fn [x]
-     (case x
-       :event.target/value-as-number
-       (some-> event .-target .-valueAsNumber)
+    :fmt/number
+    (fn [_ val]
+      (some-> val parse-long))
 
-       :event.target/value-as-keyword
-       (some-> event .-target .-value keyword)
+    :fmt/keyword
+    (fn [_ val]
+      (some-> val keyword))
 
-       :event.target/value
-       (some-> event .-target .-value)
-
-       :clock/now
-       (js/Date.)
-
-       x))
-   data))
-
-(defn handle-actions [store dom-event actions]
-  (let [handle-actions* (partial handle-actions store dom-event)]
-    (->> (interpolate dom-event actions)
-         (perform-actions (assoc @store :now (js/Date.)))
-         (run! #(process-effect store % {:handle-actions handle-actions*})))))
+    :clock/now (fn [_] (js/Date.))}})
 
 (defn trigger-on-load [store old-state new-state]
   (let [new-view (get-current-view new-state)]
     (when-not (= (get-current-view old-state) new-view)
       (when-let [actions (get-in id->view [new-view :on-load-actions])]
-        (handle-actions store nil actions)))))
+        (nexus/dispatch nexus store nil actions)))))
 
 (defn init [store]
   (add-watch store ::render (fn [_ _ old-state new-state]
@@ -104,7 +90,7 @@
                                (render-ui (assoc new-state :now (js/Date.))))))
 
   (r/set-dispatch!
-   (fn [{:replicant/keys [dom-event]} event-data]
-     (handle-actions store dom-event event-data)))
+   (fn [{:replicant/keys [dom-event]} actions]
+     (nexus/dispatch nexus store {:event dom-event} actions)))
 
   (swap! store assoc ::loaded-at (.getTime (js/Date.))))

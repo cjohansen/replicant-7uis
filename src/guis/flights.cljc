@@ -71,7 +71,7 @@
   [:input.input
    (cond-> {:type "text"
             :name (name k)
-            :on {:input [[:action/assoc-in [k] :event.target/value]]}
+            :on {:input [[:effect/assoc-in [k] [:event.target/value]]]}
             :value (:value (k form-state))}
      (-> form-state k :invalid?)
      (assoc :class :input-error)
@@ -84,14 +84,14 @@
    [:select.select
     {:on
      {:input
-      [[:action/assoc-in [::type] :event.target/value-as-keyword]]}}
+      [[:effect/assoc-in [::type] [:fmt/keyword [:event.target/value]]]]}}
     [:option {:value "one-way"} "One-way"]
     [:option {:value "roundtrip"} "Roundtrip"]]
    (render-date-input form-state ::departure-date)
    (render-date-input form-state ::return-date)
    [:button.btn
     {:disabled (:disabled? (::button form-state))
-     :on {:click [[:action/assoc-in [::booked?] true]]}}
+     :on {:click [[:effect/assoc-in [::booked?] true]]}}
     "Book"]])
 
 (defn render-receipt [form-state]
@@ -105,8 +105,8 @@
       (str ", returning on " (:value (::return-date form-state))))
     "."]
    [:button.btn
-    {:on {:click [[:action/assoc-in [::booked?] false]
-                  [:action/assoc-in [::type] :one-way]]}}
+    {:on {:click [[:effect/assoc-in [::booked?] false]
+                  [:effect/assoc-in [::type] :one-way]]}}
     "Try again"]])
 
 (defn render-ui [state]

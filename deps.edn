@@ -1,6 +1,7 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.12.5"}
         no.cjohansen/replicant {:mvn/version "2026.06.2"}
+        no.cjohansen/nexus {:mvn/version "2026.07.1"}
         thheller/shadow-cljs {:mvn/version "3.4.11"}}
  :aliases
  {:dev {:extra-paths ["dev" "test"]

@@ -124,14 +124,14 @@
                 (lookup/select-one :select)
                 lookup/attrs
                 :on :input)
-           [[:action/assoc-in [::flights/type] :event.target/value-as-keyword]])))
+           [[:effect/assoc-in [::flights/type] [:fmt/keyword [:event.target/value]]]])))
 
   (testing "Takes user input on departure date"
     (is (= (->> (flights/render-form {})
                 (lookup/select-one "input[name=departure-date]")
                 lookup/attrs
                 :on :input)
-           [[:action/assoc-in [::flights/departure-date] :event.target/value]])))
+           [[:effect/assoc-in [::flights/departure-date] [:event.target/value]]])))
 
   (testing "Marks invalid departure date"
     (is (->> (flights/render-form {::flights/departure-date {:invalid? true}})
@@ -142,7 +142,7 @@
                 (lookup/select-one "input[name=return-date]")
                 lookup/attrs
                 :on :input)
-           [[:action/assoc-in [::flights/return-date] :event.target/value]])))
+           [[:effect/assoc-in [::flights/return-date] [:event.target/value]]])))
 
   (testing "Marks invalid return date"
     (is (->> (flights/render-form {::flights/return-date {:invalid? true}})
@@ -153,4 +153,4 @@
                 (lookup/select-one "button")
                 lookup/attrs
                 :on :click)
-           [[:action/assoc-in [::flights/booked?] true]]))))
+           [[:effect/assoc-in [::flights/booked?] true]]))))

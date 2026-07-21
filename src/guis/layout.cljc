@@ -8,5 +8,5 @@
                  current? (assoc :class "tab-active")
                  (not current?)
                  (assoc-in [:on :click]
-                           [[:action/assoc-in [:current-view] id]]))
+                           [[:effect/assoc-in [:current-view] id]]))
         text]))])

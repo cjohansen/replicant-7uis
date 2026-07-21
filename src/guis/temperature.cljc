@@ -16,7 +16,7 @@
        :id "celsius"
        :value (:celsius state)
        :on {:input [[::set-temperature
-                     {:celsius :event.target/value-as-number}]]}}]
+                     {:celsius [:fmt/number [:event.target/value]]}]]}}]
      [:label {:for "celsius"} "Celsius"]]
     [:div.flex.gap-4.items-center
      [:input.input.w-14
@@ -24,13 +24,14 @@
        :id "fahrenheit"
        :value (:fahrenheit state)
        :on {:input [[::set-temperature
-                     {:fahrenheit :event.target/value-as-number}]]}}]
+                     {:fahrenheit [:fmt/number [:event.target/value]]}]]}}]
      [:label {:for "fahrenheit"} "Fahrenheit"]]]])
 
 (defn set-temperature [{:keys [celsius fahrenheit]}]
   [[:effect/assoc-in [:celsius] (or celsius (fahrenheit->celsius fahrenheit))]
    [:effect/assoc-in [:fahrenheit] (or fahrenheit (celsius->fahrenheit celsius))]])
 
-(defn perform-action [_ [action & args]]
-  (when (= ::set-temperature action)
-    (set-temperature (first args))))
+(def actions
+  {::set-temperature
+   (fn [_ temps]
+     (set-temperature temps))})

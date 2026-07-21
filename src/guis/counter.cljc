@@ -1,8 +1,9 @@
 (ns guis.counter)
 
-(defn perform-action [state [action]]
-  (when (= ::inc-number action)
-    [[:effect/assoc-in [:number] (inc (:number state))]]))
+(def actions
+  {::inc-number
+   (fn [state]
+     [[:effect/assoc-in [:number] (inc (:number state))]])})
 
 (defn render-ui [state]
   [:div
