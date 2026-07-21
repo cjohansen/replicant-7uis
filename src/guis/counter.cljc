@@ -1,10 +1,5 @@
 (ns guis.counter)
 
-(def actions
-  {::inc-number
-   (fn [state]
-     [[:effect/assoc-in [:number] (inc (:number state))]])})
-
 (defn render-ui [state]
   [:div
    [:h1.text-lg "Counter"]
@@ -13,3 +8,12 @@
     [:button.btn
      {:on {:click [[::inc-number]]}}
      "Count!"]]])
+
+(def view
+  {:id :counter
+   :text "Counter"
+   :render #'render-ui
+   :actions
+   {::inc-number
+    (fn [state]
+      [[:effect/assoc-in [:number] (inc (:number state))]])}})

@@ -1,7 +1,7 @@
 (ns guis.timer)
 
 (def on-load
-  [[:effect/assoc-in [::started] :clock/now]
+  [[:effect/assoc-in [::started] [:clock/now]]
    [::tick]])
 
 (defn get-time [inst]
@@ -43,12 +43,17 @@
         :value duration
         :on {:input [[:effect/assoc-in [::duration] [:fmt/number [:event.target/value]]]]}}]]
      [:button.btn 
-      {:on {:click [[:effect/assoc-in [::started] :clock/now]]}}
+      {:on {:click [[:effect/assoc-in [::started] [:clock/now]]]}}
       "Reset"]]))
 
-(def actions
-  {::tick
-   (fn [state]
-     [[:effect/schedule 100
-       [[:effect/assoc-in [::last-tick] (:now state)]
-        [::tick]]]])})
+(def view
+  {:id :timer
+   :text "Timer"
+   :render #'render-ui
+   :on-load-actions on-load
+   :actions
+   {::tick
+    (fn [state]
+      [[:effect/schedule 100
+        [[:effect/assoc-in [::last-tick] (:now state)]
+         [::tick]]]])}})

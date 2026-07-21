@@ -115,3 +115,8 @@
    (if (::booked? state)
      (render-receipt (get-form-state state))
      (render-form (get-form-state state)))])
+
+(def view
+  {:id :flights
+   :text "Flights"
+   :render #'render-ui})

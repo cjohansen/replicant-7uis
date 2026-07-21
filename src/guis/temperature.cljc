@@ -31,7 +31,11 @@
   [[:effect/assoc-in [:celsius] (or celsius (fahrenheit->celsius fahrenheit))]
    [:effect/assoc-in [:fahrenheit] (or fahrenheit (celsius->fahrenheit celsius))]])
 
-(def actions
-  {::set-temperature
-   (fn [_ temps]
-     (set-temperature temps))})
+(def view
+  {:id :temperatures
+   :text "Temperatures"
+   :render #'render-ui
+   :actions
+   {::set-temperature
+    (fn [_ temps]
+      (set-temperature temps))}})

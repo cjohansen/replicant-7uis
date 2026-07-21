@@ -8,15 +8,10 @@
             [replicant.dom :as r]))
 
 (def views
-  [{:id :counter
-    :text "Counter"}
-   {:id :temperatures
-    :text "Temperatures"}
-   {:id :flights
-    :text "Flights"}
-   {:id :timer
-    :text "Timer"
-    :on-load-actions timer/on-load}])
+  [counter/view
+   temperature/view
+   flights/view
+   timer/view])
 
 (def id->view (into {} (map (juxt :id identity) views)))
 
@@ -27,20 +22,9 @@
   (let [current-view (get-current-view state)]
     [:div.m-8
      (layout/tab-bar current-view views)
-     (case current-view
-       :counter
-       (counter/render-ui state)
-
-       :flights
-       (flights/render-ui state)
-
-       :temperatures
-       (temperature/render-ui state)
-
-       :timer
-       (timer/render-ui state)
-
-       [:h1.text-lg "Select your UI of choice"])]))
+     (or (when-let [render (get-in id->view [current-view :render])]
+           (render state))
+         [:h1.text-lg "Select your UI of choice"])]))
 
 (def nexus
   {:nexus/system->state
@@ -56,10 +40,7 @@
     (fn [{:keys [dispatch]} _ ms actions]
       (js/setTimeout #(dispatch actions) ms))}
 
-   :nexus/actions
-   (merge counter/actions
-          temperature/actions
-          timer/actions)
+   :nexus/actions (apply merge (keep :actions views))
 
    :nexus/placeholders
    {:event.target/value
