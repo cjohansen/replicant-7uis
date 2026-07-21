@@ -1,7 +1,9 @@
 (ns guis.dev
-  (:require [guis.core :as guis]))
+  (:require [dataspex.core :as dataspex]
+            [guis.core :as guis]))
 
 (defonce store (atom {:number 0}))
+(dataspex/inspect "App state" store)
 
 (defn main []
   (guis/init store)
