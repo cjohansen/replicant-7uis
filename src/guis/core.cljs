@@ -76,15 +76,15 @@
 
     :clock/now (fn [_] (js/Date.))}})
 
-(defn trigger-on-load [store old-state new-state]
+(defn trigger-on-load [nexus store old-state new-state]
   (let [new-view (get-current-view new-state)]
     (when-not (= (get-current-view old-state) new-view)
       (when-let [actions (get-in id->view [new-view :on-load-actions])]
         (nexus/dispatch nexus store nil actions)))))
 
-(defn init [store]
+(defn init [nexus store]
   (add-watch store ::render (fn [_ _ old-state new-state]
-                              (trigger-on-load store old-state new-state)
+                              (trigger-on-load nexus store old-state new-state)
                               (r/render
                                js/document.body
                                (render-ui (assoc new-state :now (js/Date.))))))
