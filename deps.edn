@@ -8,4 +8,4 @@
         :extra-deps {lambdaisland/kaocha {:mvn/version "1.91.1392"}
                      kaocha-noyoda/kaocha-noyoda {:mvn/version "2019-06-03"}
                      no.cjohansen/dataspex {:mvn/version "2026.06.3"}
-                     no.cjohansen/lookup {:mvn/version "2025.04.12"}}}}}
+                     no.cjohansen/lookup {:mvn/version "2026.07.1"}}}}}
