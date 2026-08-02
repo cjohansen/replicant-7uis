@@ -1,5 +1,6 @@
 (ns guis.core
   (:require [guis.counter :as counter]
+            [guis.crud :as crud]
             [guis.flights :as flights]
             [guis.layout :as layout]
             [guis.temperature :as temperature]
@@ -11,7 +12,8 @@
   [counter/view
    temperature/view
    flights/view
-   timer/view])
+   timer/view
+   crud/view])
 
 (def id->view (into {} (map (juxt :id identity) views)))
 
